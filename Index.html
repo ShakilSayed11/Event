@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Google Sheets Data Display with Pagination</title>
+    <style>
+        /* Your CSS styles here */
+        /* Style the table */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            overflow-x: auto;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .pagination a {
+            padding: 6px 12px;
+            margin: 0 3px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: black;
+            cursor: pointer;
+        }
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* Responsive styles */
+        @media only screen and (max-width: 600px) {
+            th, td {
+                font-size: 12px;
+                padding: 6px;
+            }
+            .pagination {
+                margin-top: 10px;
+                font-size: 14px;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>Employee Data</h1>
+    <table id="employeeTable">
+        <thead>
+            <tr>
+                <th>Date & Time</th>
+                <th>Employee Name</th>
+                <th>Employee Team</th>
+            </tr>
+        </thead>
+        <tbody id="dataBody">
+            <!-- Data will be displayed here -->
+        </tbody>
+    </table>
+
+    <div class="pagination" id="pagination">
+        <a href="#" id="prevPage">Previous Page</a>
+        <!-- Pagination buttons will appear here -->
+        <a href="#" id="nextPage">Next Page</a>
+    </div>
+
+    <!-- Your JavaScript to fetch and display data here -->
+    <script>
+        // JavaScript code to fetch and display data from Google Sheets
+
+        const spreadsheetId = '1Iw5qrpX6FJVRV0UI1QWKMi33QPQTmpZWkEO1iFWd3uc';
+        const apiKey = 'AIzaSyAWVybWDvIA9Xiic2z3uoat4V1ymFshW7s';
+        const range = 'EmployeeData!A:C'; // Data range from column A to C in Sheet
+        const itemsPerPage = 5; // Number of items to display per page
+        let currentPage = 1;
+        let data;
+
+        function displayData(pageNumber, data) {
+            const tableBody = document.getElementById('dataBody');
+            tableBody.innerHTML = ''; // Clear previous data
+
+            const startIndex = (pageNumber - 1) * itemsPerPage + 1; // Skip header row
+            const endIndex = pageNumber * itemsPerPage + 1; // Skip header row
+
+            for (let i = startIndex; i < endIndex && i < data.length; i++) {
+                const newRow = document.createElement('tr');
+                data[i].forEach(cell => {
+                    const newCell = document.createElement('td');
+                    newCell.textContent = cell || ''; // To handle empty cells
+                    newRow.appendChild(newCell);
+                });
+                tableBody.appendChild(newRow);
+            }
+        }
+
+        function createPaginationButtons(totalPages) {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            const prevPage = document.createElement('a');
+            prevPage.href = '#';
+            prevPage.textContent = 'Previous Page';
+            prevPage.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayData(currentPage, data);
+                    setActiveButton(currentPage);
+                }
+            });
+            pagination.appendChild(prevPage);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('a');
+                button.href = '#';
+                button.textContent = i;
+                button.addEventListener('click', () => {
+                    currentPage = i;
+                    displayData(i, data);
+                    setActiveButton(i);
+                });
+                pagination.appendChild(button);
+            }
+
+            const nextPage = document.createElement('a');
+            nextPage.href = '#';
+            nextPage.textContent = 'Next Page';
+            nextPage.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayData(currentPage, data);
+                    setActiveButton(currentPage);
+                }
+            });
+            pagination.appendChild(nextPage);
+
+            setActiveButton(currentPage);
+        }
+
+        function setActiveButton(pageNumber) {
+            const buttons = document.querySelectorAll('.pagination a');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+                if (parseInt(button.textContent) === pageNumber) {
+                    button.classList.add('active');
+                }
+            });
+        }
+
+        fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`)
+            .then(response => response.json())
+            .then(sheetData => {
+                console.log('Received data:', sheetData); // Log the received data for inspection
+                data = sheetData.values;
+
+                if (data && data.length > 1) {
+                    const totalPages = Math.ceil((data.length - 1) / itemsPerPage);
+                    createPaginationButtons(totalPages);
+                    displayData(currentPage, data);
+                } else {
+                    const tableBody = document.getElementById('dataBody');
+                    tableBody.innerHTML = '<tr><td colspan="3">No data found</td></tr>';
+                }
+            })
+            .catch(error => console.error('Error fetching data: ', error));
+
+                        // Set interval to fetch data every 3-4 seconds (adjust the milliseconds as needed)
+    setInterval(fetchData, 3000); // 3000 milliseconds = 3 seconds
+    </script>
+</body>
+</html>
