@@ -6,37 +6,66 @@
     <style>
         /* Your CSS styles here */
         /* Style the table */
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            overflow-x: auto;
-        }
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .pagination {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .pagination a {
-            padding: 6px 12px;
-            margin: 0 3px;
-            border: 1px solid #ddd;
-            text-decoration: none;
-            color: black;
-            cursor: pointer;
-        }
-        .pagination a.active {
-            background-color: #4CAF50;
-            color: white;
-        }
+body {
+    background-color: #121212; /* Dark Background */
+    color: #ffffff; /* White Text */
+    font-family: 'Poppins', sans-serif; /* Updated Font */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: none;
+    text-align: center;
+    padding: 15px;
+    font-size: 14px;
+}
+
+th {
+    background-color: #212121; /* Darker Gray */
+    color: #ffffff; /* White Text */
+    text-transform: uppercase;
+}
+
+td {
+    background-color: #333333; /* Dark Gray */
+}
+
+/* Pagination Styles */
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif; /* Updated Font */
+}
+
+.pagination a {
+    padding: 10px 20px;
+    margin: 0 5px;
+    border: 1px solid #ffffff; /* White Border */
+    background-color: #212121; /* Darker Gray */
+    text-decoration: none;
+    color: #ffffff; /* White Text */
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.pagination a:hover {
+    background-color: #333333; /* Dark Gray */
+    color: #ffffff; /* White */
+}
+
+.pagination a.active {
+    background-color: #ffffff; /* White */
+    color: #212121; /* Darker Gray */
+    font-weight: bold; /* Highlight active link */
+}
 
         /* Responsive styles */
         @media only screen and (max-width: 768px) {
